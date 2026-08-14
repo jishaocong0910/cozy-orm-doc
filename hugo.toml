@@ -1,0 +1,23 @@
+baseURL = 'https://example.org/'
+title = 'CozyORM'
+theme = 'hugo-book'
+
+[languages]
+[languages.en]
+label = "English"
+contentDir = "content.en"
+weight = 1
+[languages.zh]
+label = "简体中文"
+contentDir = "content.zh"
+weight = 2
+
+[params]
+bookToC = true
+BookTheme = 'ayu-light'
+
+[markup]
+[markup.highlight]
+style = 'catppuccin-latte'
+
+

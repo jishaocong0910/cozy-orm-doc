@@ -1,0 +1,24 @@
+{{ $emojis := dict
+"caution" ":exclamation:"
+"important" ":information_source:"
+"note" ":information_source:"
+"tip" ":bulb:"
+"warning" ":information_source:"
+}}
+{{- $attributes := .Attributes -}}
+{{- $class := printf "book-hint %s" ($.AlertType | lower) -}}
+{{- if isset $attributes "class" -}}
+{{- $class = printf "%s %s" $class (index $attributes "class") -}}
+{{ end -}}
+{{- $attributes = merge $attributes (dict "class" $class) -}}
+<blockquote {{ range $key, $value := $attributes }}{{printf "%s='%s'" $key $value | safeHTMLAttr}}{{ end }}>
+<p>
+    {{ transform.Emojify (index $emojis .AlertType) }}
+    <strong>{{ with .AlertTitle }}
+    {{ . }}
+    {{ else }}
+    {{ or (i18n .AlertType) (title .AlertType) }}
+    {{ end }}</strong>
+</p>
+{{ .Text -}}
+</blockquote>
