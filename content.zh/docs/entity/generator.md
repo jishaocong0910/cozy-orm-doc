@@ -35,7 +35,7 @@ func main() {
 
 	gen.Config{
 		DB:       db,
-		DBType:   orm.DBType_.MySQL,
+		DBType:   orm.DBType_.PostgreSQL,
 		FilePath: "repo/entity",
 		Tables:   []string{"user", "order"},
 	}.Gen()
@@ -55,13 +55,13 @@ func main() {
 | OmitNameTag      | `bool`                                   | 不添加`table`和`column`[标签](../../entity/tag)。                                                                                |
 | Tables           | `[]string`                               | 需要生成的表。                                                                                                                   |
 | IgnoreColumns    | {{<code>}}map[string][]string{{</code>}} | 指定忽略的表字段，这些字段不会出现在实体中，key为表名，value为字段名。                                                           |
-| EntityNamePrefix | `string`                                 | 添加实体名称前缀。                                                                                                               |
-| EntityNameSubfix | `string`                                 | 添加实体名称后缀。                                                                                                               |
+| EntityNamePrefix | `string`                                 | 实体名称前缀。                                                                                                                   |
+| EntityNameSubfix | `string`                                 | 实体名称后缀。                                                                                                                   |
 | TypeMappings     | `gen.TypeMappings`                       | 自定义类型映射规则。                                                                                                             |
 
 ## 自定义类型
 
-默认情况下，生成的实体字段是Go内置类型。在Go内置类型不满足业务的场景下，可以在生成实体后手动修改实体字段的类型，也可以配置生成器的`TypeMappings`参数，将指定的数据库类型映射到自定义或第三方类型。
+默认情况下，生成的实体字段是Go内置类型。在Go内置类型不满足业务的场景下，可以在生成实体后手动修改，也可以配置生成器的`TypeMappings`参数，将指定的数据库类型映射到自定义或第三方类型。
 
 通过`gen.NewTypeMapping[T](columnType string)`创建类型映射规则，生成器将按照顺序匹配。泛型`T`为实体字段类型，必须满足[[字段类型]](../field_type)要求，为了方便，允许指针写成值类型。`columnType`参数为数据库字段类型，格式为`<data_type>[(<parameter_list>)]`，参数间分隔符为`,`或空格，通配符`%`表示单个任意值，`_`表示非0。
 

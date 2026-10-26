@@ -25,7 +25,7 @@ weight: 2
 
 ## 枚举
 
-CozyORM中以下划线结尾的全局变量为枚举，通过`<enum>.<option>`选择枚举选项，例如`orm.DBType_.MySQL`。
+CozyORM中，以下划线结尾的全局变量是枚举类型，通过`<enum>.<option>`选择枚举选项，例如`orm.DBType_.MySQL`。
 
 > [!TIP]
 >
@@ -33,17 +33,17 @@ CozyORM中以下划线结尾的全局变量为枚举，通过`<enum>.<option>`�
 
 ## 获取生成Key模式
 
-获取生成Key，即获取插入记录中自动递增或序列生成的字段值，不同数据库方式各异。根据数据库特性选择适配的模式，并在实体中对自动生成的字段添加`auto`[标签](../../entity/tag)，即可在插入记录后将字段值注入到实体中。
+获取生成Key，即获取插入记录中自动递增或序列生成的字段值，不同数据库方式各异。根据数据库特性选择适配的模式，并在实体中对自动生成的字段添加`auto`[标签](../../entity/tag)，即可在插入记录后将字段值设置到实体中。
 
 `orm.GetGeneratedKeyMode_`有以下选项，其中基础执行器`Mutation`只支持`FirstInsertId`和`LastInsertId`，高级执行器`Insert`支持所有。
 
-| 选项            | 描述                                                                                                                                                                        |
-|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| FirstInsertId   | 将`sql.Result.LastInsertId()`的返回值作为第一个插入记录的ID，可适配MySQL。                                                                                                  |
-| LastInsertId    | 将`sql.Result.LastInsertId()`的返回值作为最后一个插入记录的ID，可适配SQLite。                                                                                               |
-| InsertReturning | 通过语法`INSERT ... RETURNING ...`返回生成的Key，可适配PostgreSQL、SQLite。                                                                                                 |
-| SQLServer       | 通过SQL Server方言`INSERT ... OUTPUT ...`返回生成的Key，专门适配SQL Server。                                                                                                |
-| Oracle          | 通过Oracle的方言`INSERT ... RETURNING ... INTO ...`返回生成的Key，专门适配Oracle，只支持被{{<code>}}GENERATED&nbsp;...&nbsp;AS IDENTITY{{</code>}}修饰的字段。 |
+| 选项            | 描述                                                                                                                                                 |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| FirstInsertId   | 将`sql.Result.LastInsertId()`的返回值作为第一个插入记录的ID，可适配MySQL。                                                                           |
+| LastInsertId    | 将`sql.Result.LastInsertId()`的返回值作为最后一个插入记录的ID，可适配SQLite。                                                                        |
+| InsertReturning | 通过语法`INSERT ... RETURNING ...`返回生成的Key，可适配PostgreSQL、SQLite。                                                                          |
+| SQLServer       | 通过SQL Server方言`INSERT ... OUTPUT ...`返回生成的Key，专门适配SQL Server。                                                                         |
+| Oracle          | 通过Oracle的方言`INSERT ... RETURNING ... INTO ...`返回生成的Key，专门适配Oracle，只支持被{{<code>}}GENERATED ... AS IDENTITY{{</code>}}修饰的字段。 |
 
 ## 分页模式
 
@@ -84,7 +84,7 @@ CozyORM中以下划线结尾的全局变量为枚举，通过`<enum>.<option>`�
 *Example*
 
 ```go
-type UserProfile struct {
+type UserInfo struct {
 	Id        *int64
 	UserId    *int64
 	AvatarUrl *string
@@ -99,7 +99,7 @@ func main() {
 		TabNameMapper: orm.NewNameMapper().LowerSnakeCase().AddPrefix("tb_"),
 	}.Build()
 
-	db.FindOne[UserProfile](nil).Cond(func(c *orm.Cond) {
+	db.FindOne[UserInfo](nil).Cond(func(c *orm.Cond) {
 		c.Eq("id", 1)
 	}).Do()
 	// 执行SQL:

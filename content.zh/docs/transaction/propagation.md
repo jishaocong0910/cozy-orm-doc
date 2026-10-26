@@ -5,7 +5,7 @@ weight: 2
 
 # 事务传播
 
-执行器、事务实例和事务钩子，都会检查`ctx`参数中的值，若存在所属DB实例创建的事务数据库连接（`*sql.Tx`），则表明`ctx`中存在事务，然后加入该事务。若`ctx`中不存在事务，则执行器和事务钩子以非事务执行，事务实例则会创建新的事务数据库连接，然后添加到`ctx`中。
+执行器、事务实例和事务钩子会检查`ctx`参数中是否存在所属DB实例创建的事务连接（`*sql.Tx`）。若存在，即表明`ctx`中已有事务，执行器、事务钩子、事务实例都会加入它。若不存在，执行器和事务钩子以非事务执行，事务实例则会创建新的事务连接并设置到`ctx`中。
 
 以下示例中，调用`createOrder`时，两个函数会在同一个事务中执行。
 
@@ -15,7 +15,7 @@ func CreateOrder(ctx context.Context, order *Order, payment *Payment) error {
 	return db.Tx(ctx).Do(func(ctx context.Context) error {
 		db.Insert[Order](ctx).Must().Entities(order).Do()
 		db.Insert[Payment](ctx).Must().Entities(payment).Do()
-		err = deductInventory(ctx, order)
+		err := DeductInventory(ctx, order)
 		if err != nil {
 			return err
 		}

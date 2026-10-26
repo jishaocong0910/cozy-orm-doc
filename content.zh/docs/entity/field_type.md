@@ -15,7 +15,7 @@ weight: 2
 |---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Pointer | `int`、`int8`、`int16`、`int32`、`int64`、`uint`、`uint8`、`uint16`、`uint32`、`uint64`、`float32`、`float64`、`bool`、`string`、`[N]byte`（数组）、`time.Time`、`uuid.UUID`(Go1.27新增) |
 | Slice   | `byte`                                                                                                                                                                                   |
-| Map     | -                                                                                                                                                                                        |
+| Map     | （只支持自定义类型）                                                                                                                                                                     |
 
 *Example*
 
@@ -47,7 +47,7 @@ import (
     "github.com/shopspring/decimal"
 )
 
-type Wallet struct {
+type Account struct {
     Id      *int64
     UserId  *int64
     Balance *decimal.Decimal
@@ -56,14 +56,14 @@ type Wallet struct {
 
 ### Converter
 
-CozyORM拥有独立的自定义类型机制：实现`orm.Converter[T]`接口。泛型`T`是自定义类型值的和数据库字段值之间的转换介质类型，必须是支持的Go内置类型，为了方便，允许指针写成值类型。
+CozyORM拥有独立的自定义类型机制：实现`orm.Converter[T]`接口。泛型`T`是一个中间类型，用于在自定义类型值和数据库字段值之间进行转换。`T`必须是支持的Go内置类型，为了方便，允许指针写成值类型。
 
 *`orm.Converter[T]`的方法*
 
-| 方法                                                           | 描述                                                                                                                                                                                                                                 |
-|----------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| {{<code>}}orm.Converter.ToArg()&nbsp;T{{</code>}} | 自定义类型的值作为SQL参数值时，会调用此方法进行转换。若变量为`nil`则不会被调用。                                                                                                                                                     |
-| `orm.Converter.ToField(T)`                                     | 映射查询结果时，会先将数据库字段值转换为中间类型，再调用此方法转换为自定义类型。若数据库字段值为`null`则不会被调用。**该方法的接受者必须是指针**，被调用时，接受者指向其底层类型的零值，转换过程是将中间类型值转化为接受者指向的值。 |
+| 方法                                         | 描述                                                                                                                                                                                                                     |
+|----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| {{<code>}}orm.Converter.ToArg() T{{</code>}} | 自定义类型的值作为SQL参数值时，会调用此方法进行转换。若值为`nil`则不会被调用。                                                                                                                                           |
+| `orm.Converter.ToField(T)`                   | 查询时先将数据库字段值转换为间接类型，再调用此方法转换为自定义类型。若数据库字段值为`null`则不会被调用。**该方法的接受者必须是指针**，被调用时，接受者指向其底层类型的零值，转换过程是将间接类型值转化为接受者指向的值。 |
 
 > [!WARNING]
 >
@@ -82,8 +82,8 @@ type Product struct {
 	Id          *int64
 	Name        *string
 	Description *Description
+    Tags        Tags
 	SkuMap      SkuMap
-	Tags        Tags
 }
 
 // 自定义类型
@@ -105,6 +105,18 @@ func (d *Description) ToField(src string) {
 }
 
 // 自定义类型
+type Tags []string
+
+func (p Tags) ToArg() string {
+    return strings.Join(p, ",")
+}
+
+func (p *Tags) ToField(src string) {
+    // 数据库字段值不为null时该方法才会被调用，因此src一定不为nil
+    *p = strings.Split(src, ",")
+}
+
+// 自定义类型
 type SkuMap map[string]string
 
 func (s SkuMap) ToArg() *string {
@@ -115,18 +127,6 @@ func (s SkuMap) ToArg() *string {
 }
 
 func (s *SkuMap) ToField(src *string) {
-	// 数据库字段值不为null时该方法才会被调用，因此src一定不为nil
 	json.Unmarshal([]byte(*src), s)
-}
-
-// 自定义类型
-type Tags []string
-
-func (p Tags) ToArg() string {
-	return strings.Join(p, ",")
-}
-
-func (p *Tags) ToField(src string) {
-	*p = strings.Split(src, ",")
 }
 ```

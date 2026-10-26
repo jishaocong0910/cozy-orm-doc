@@ -61,7 +61,7 @@ func main() {
 
 ## Quoted
 
-拼接引用标识符，限定符为DB实例配置的`IdentifierDelimiter`参数所指定。
+拼接引用标识符，限定符由DB实例配置的`IdentifierDelimiter`参数所指定。
 
 *Example*
 
@@ -118,7 +118,7 @@ func main() {
 
 ## Arg
 
-拼接参数占位符并设置参数，参数占位符为DB实例配置的`ParamPrefix`参数所指定。
+拼接参数占位符并设置参数，参数占位符由DB实例配置的`ParamPrefix`参数所指定。
 
 *Example*
 

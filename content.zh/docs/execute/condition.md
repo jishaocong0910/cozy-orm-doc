@@ -87,18 +87,18 @@ func GetOrder(ctx context.Context, userId int64, merchantId int64, orderNo strin
 	// FROM order
 	// WHERE user_id = $1
 	//   AND merchant_id = $2
-	//   AND (order_no = ? OR trade_no = $3)
+	//   AND (order_no = $3 OR trade_no = $4)
 }
 ```
 
 ## 条件表达式
 
-`Expr`方法用于拼接原生SQL表达式，并且可以设置参数。整个表达式会视为一个子条件，自动添加括号对。
+`Expr`方法用于拼接SQL表达式，并且可以设置参数。整个表达式会视为一个子条件，自动添加括号对。
 
 *Example*
 
 ```go
-// 查找根据日期用户的订单
+// 根据日期查找订单
 func FindOrdersByDate(ctx context.Context, userId int64, merchantId int64, date time.Time) ([]*Order, error) {
 	return db.Find[Order](ctx).Select("id", "order_no", "user_id", "merchant_id", "amount", "status", "create_at").
 		Cond(func(c *orm.Cond) {
