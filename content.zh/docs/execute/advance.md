@@ -11,16 +11,16 @@ weight: 4
 
 `Find`执行器通过方法`orm.DB.Find[E]`创建，用于查询多行记录。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
 
-| 方法                              | 描述                                                                |
-|-----------------------------------|---------------------------------------------------------------------|
-| `Select(...string)`               | 查询的表字段，默认为所有字段。                                      |
-| `OnDemand(*orm.Demand)`           | 按需指定查询的表字段，详见[[按需字段]](#按需字段)。                 |
-| `Cond(func(c *orm.Cond))`         | 条件处理函数，使用参数`c`拼接条件，详见[[查询条件]](../condition)。 |
-| `OrderBy(func(o *orm.OrderBy))`   | 排序处理函数，使用参数`o`拼接排序规则。                             |
-| `Page(offset int, rowCount int) ` | 分页，需配置[分页模式](../../db_instance/config/#分页模式)。        |
-| `IncludeDeleted()`                | 包含软删除的数据（启用软删除模式时使用）。                          |
-| `LastClause(string)`              | SQL末尾的子句，例如`FOR UPDATE`。                                   |
-| `Do() ([]*E, error)`              | 执行并返回实体。                                                    |
+| 方法                              | 描述                                                         |
+|-----------------------------------|--------------------------------------------------------------|
+| `Select(...string)`               | 查询的表字段，默认为所有字段。                               |
+| `OnDemand(*orm.Demand)`           | 按需指定查询的表字段，详见[[按需字段]](#按需字段)。          |
+| `Cond(func(c *orm.Cond))`         | 条件处理函数，详见[[查询条件]](../condition)。               |
+| `OrderBy(func(o *orm.OrderBy))`   | 排序处理函数，详见[[排序]](#排序)。                          |
+| `Page(offset int, rowCount int) ` | 分页，需配置[分页模式](../../db_instance/config/#分页模式)。 |
+| `IncludeDeleted()`                | 包含软删除的数据（启用软删除模式时使用）。                   |
+| `LastClause(string)`              | SQL末尾的子句，例如`FOR UPDATE`。                            |
+| `Do() ([]*E, error)`              | 执行并返回实体。                                             |
 
 *Example*
 
@@ -131,7 +131,7 @@ func main() {
 | `OnDemand(*orm.Demand)`                      | 按需指定更新的表字段，详见[[按需字段]](#按需字段)。                                                          |
 | `Set(string, any)`                           | 设置字段的更新值。                                                                                           |
 | `SetExpr(string, string)`                    | 设置字段更新为指定的SQL表达式。                                                                              |
-| {{<code>}}Cond(func(c *orm.Cond)){{</code>}} | 条件处理函数，使用参数`c`拼接条件，详见[[查询条件]](../condition)。                                          |
+| {{<code>}}Cond(func(c *orm.Cond)){{</code>}} | 条件处理函数，详见[[查询条件]](../condition)。                                                               |
 | `IncludeDeleted()`                           | 包含软删除的数据（启用软删除模式时使用）。                                                                   |
 | `SkipSafety()`                               | 指示跳过防止全表操作的安全检查。                                                                             |
 | `Do() (int64, error)`                        | 执行并返回影响行数。                                                                                         |
@@ -170,9 +170,9 @@ func main() {
 >
 > 参数及[字段策略](../../db_instance/column_policy/#字段策略)都会影响字段更新，详见[[更新字段优先级]](#更新字段优先级)。
 
-## UpdateRows
+## UpdateBatch
 
-`UpdateRows`执行器通过方法`orm.DB.UpdateRows[E]`创建，用于批量按行更新记录。它要求实体`E`必须有且仅有一个带`pk`[标签](../../entity/tag)的字段，更新的实体中该字段不能为`nil`。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
+`UpdateBatch`执行器通过方法`orm.DB.UpdateBatch[E]`创建，用于批量按行更新记录。它要求实体`E`必须有且仅有一个带`pk`[标签](../../entity/tag)的字段，更新的实体中该字段不能为`nil`。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
 
 | 方法                                         | 描述                                                                                                                                                            |
 |----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -181,7 +181,7 @@ func main() {
 | `OnDemand(*orm.Demand)`                      | 按需指定更新的表字段，详见[[按需字段]](#按需字段)。                                                                                                             |
 | `Set(string, any)`                           | 设置字段的更新值。                                                                                                                                              |
 | `SetExpr(string, string)`                    | 设置字段更新为指定的SQL表达式。                                                                                                                                 |
-| {{<code>}}Cond(func(c *orm.Cond)){{</code>}} | 条件处理函数，使用参数`c`拼接条件，详见[[查询条件]](../condition)。                                                                                             |
+| {{<code>}}Cond(func(c *orm.Cond)){{</code>}} | 条件处理函数，详见[[查询条件]](../condition)。                                                                                                                  |
 | `IncludeDeleted()`                           | 包含软删除的数据（启用软删除模式时使用）。                                                                                                                      |
 | `Do() (int64, error)`                        | 执行并返回影响行数。                                                                                                                                            |
 
@@ -220,7 +220,7 @@ func main() {
 		},
 	}
 
-    affected, _ := db.UpdateRows[User](nil).Entities(users...).SetExpr("update_at", "now()").Required("status").
+    affected, _ := db.UpdateBatch[User](nil).Entities(users...).SetExpr("update_at", "now()").Required("status").
 		Cond(func(c *orm.Cond) {
 			c.Eq("status", 1)
 		}).Do()
@@ -252,11 +252,11 @@ func main() {
 
 `Delete`执行器通过方法`orm.DB.Delete[E]`创建，用于物理删除记录。
 
-| 方法                      | 描述                                                                |
-|---------------------------|---------------------------------------------------------------------|
-| `Cond(func(c *orm.Cond))` | 条件处理函数，使用参数`c`拼接条件，详见[[查询条件]](../condition)。 |
-| `SkipSafety()`            | 指示跳过防止全表操作的安全检查。                                    |
-| `Do() (int64, error)`     | 执行并返回影响行数。                                                |
+| 方法                      | 描述                                           |
+|---------------------------|------------------------------------------------|
+| `Cond(func(c *orm.Cond))` | 条件处理函数，详见[[查询条件]](../condition)。 |
+| `SkipSafety()`            | 指示跳过防止全表操作的安全检查。               |
+| `Do() (int64, error)`     | 执行并返回影响行数。                           |
 
 *Example*
 
@@ -273,11 +273,11 @@ affected, _ := db.Delete[User](nil).Cond(func(c *orm.Cond) {
 `DeleteSoftly`执行器通过方法`orm.DB.DeleteSoftly[E]`创建，用于软删除记录。必须配置[软删除模式](../../db_instance/column_policy/#软删除模式)才可使用。
 
 
-| 方法                      | 描述                                                                |
-|---------------------------|---------------------------------------------------------------------|
-| `Cond(func(c *orm.Cond))` | 条件处理函数，使用参数`c`拼接条件，详见[[查询条件]](../condition)。 |
-| `SkipSafety()`            | 指示跳过防止全表操作的安全检查。                                    |
-| `Do() (int64, error)`     | 执行并返回影响行数。                                                |
+| 方法                      | 描述                                           |
+|---------------------------|------------------------------------------------|
+| `Cond(func(c *orm.Cond))` | 条件处理函数，详见[[查询条件]](../condition)。 |
+| `SkipSafety()`            | 指示跳过防止全表操作的安全检查。               |
+| `Do() (int64, error)`     | 执行并返回影响行数。                           |
 
 *Example*
 
@@ -302,7 +302,7 @@ func main() {
 	db.DeleteSoftly[User](nil).Cond(func(c *orm.Cond) {
 		c.Eq("id", 1)
 	}).Do()
-	// 执行SQL:
+	// 执行SQL: 
 	// UPDATE user SET deleted = id WHERE id = 1 AND deleted = 0
 }
 ```
@@ -419,7 +419,7 @@ func main() {
 
 ## 更新字段优先级
 
-以下字段一定出现在`Update`和`UpdateRows`执行器的更新字段列表中：
+以下字段一定出现在`Update`和`UpdateBatch`执行器的更新字段列表中：
 
 * `OnDemand`匹配的字段。
 * 无`OnDemand`参数时，更新的实体中非nil字段。

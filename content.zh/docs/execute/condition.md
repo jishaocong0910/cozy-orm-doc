@@ -9,26 +9,26 @@ weight: 6
 
 ## 方法概述
 
-| 方法                                         | 条件操作符/表达式/描述                                                              |
-|----------------------------------------------|-------------------------------------------------------------------------------------|
-| `Eq(column string, arg any)`                 | `=`                                                                                 |
-| `Ne(column string, arg any)`                 | `<>`                                                                                |
-| `Gt(column string, arg any)`                 | `>`                                                                                 |
-| `Lt(column string, arg any)`                 | `<`                                                                                 |
-| `Ge(column string, arg any)`                 | `>=`                                                                                |
-| `Le(column string, arg any)`                 | `<=`                                                                                |
-| `Like(column string, str string)`            | `LIKE '%...%'`                                                                      |
-| `LikeLeft(column string, str string)`        | `LIKE '...%'`                                                                       |
-| `LikeRight(column string, str string)`       | `LIKE '%...'`                                                                       |
-| `LikePattern(column string, pattern string)` | `LIKE '...'`                                                                        |
-| `In(column string, args []any)`              | `IN(...)`                                                                           |
-| `Between(column string, min, max any)`       | `BETWEEN ... AND ...`                                                               |
-| `IsNull(column string)`                      | `IS NULL`                                                                           |
-| `IsNotNull(column string)`                   | `IS NOT NULL`                                                                       |
-| `Not()`                                      | 下个条件增加`NOT`修饰。                                                             |
-| `Or()`                                       | 下个条件使用`OR`连接。                                                              |
-| `Sub(func(c *orm.Cond))`                     | 子条件处理函数，使用参数`c`拼接子条件，详见[[子条件]](#子条件)。                    |
-| `Expr(func(c *orm.CondExpr))`                | 条件表达式处理函数，使用参数`c`拼接SQL和设置参数，详见[[条件表达式]](#条件表达式)。 |
+| 方法                                         | 条件操作符/表达式/描述                                |
+|----------------------------------------------|-------------------------------------------------------|
+| `Eq(column string, arg any)`                 | `=`                                                   |
+| `Ne(column string, arg any)`                 | `<>`                                                  |
+| `Gt(column string, arg any)`                 | `>`                                                   |
+| `Lt(column string, arg any)`                 | `<`                                                   |
+| `Ge(column string, arg any)`                 | `>=`                                                  |
+| `Le(column string, arg any)`                 | `<=`                                                  |
+| `Like(column string, str string)`            | `LIKE '%...%'`                                        |
+| `LikeLeft(column string, str string)`        | `LIKE '...%'`                                         |
+| `LikeRight(column string, str string)`       | `LIKE '%...'`                                         |
+| `LikePattern(column string, pattern string)` | `LIKE '...'`                                          |
+| `In(column string, args []any)`              | `IN(...)`                                             |
+| `Between(column string, min, max any)`       | `BETWEEN ... AND ...`                                 |
+| `IsNull(column string)`                      | `IS NULL`                                             |
+| `IsNotNull(column string)`                   | `IS NOT NULL`                                         |
+| `Not()`                                      | 下个条件增加`NOT`修饰。                               |
+| `Or()`                                       | 下个条件使用`OR`连接。                                |
+| `Sub(func(c *orm.Cond))`                     | 子条件处理函数，详见[[子条件]](#子条件)。             |
+| `Expr(func(c *orm.CondExpr))`                | 条件表达式处理函数，详见[[条件表达式]](#条件表达式)。 |
 
 *Example*
 

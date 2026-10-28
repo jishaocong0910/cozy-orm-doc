@@ -18,6 +18,6 @@ CozyORM通过DB实例提供的方法创建执行器与数据库交互。执行�
 * `FindOne` 查询单行记录。
 * `Insert` 插入记录。
 * `Update` 更新记录。
-* `UpdateRows` 按行更新记录。
+* `UpdateBatch` 批量按行更新记录。
 * `Delete` 删除记录。
 * `DeleteSoftly` 软删除记录。
