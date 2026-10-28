@@ -26,7 +26,7 @@ func main() {
 		b.Text("Update product SET status = ").Arg("draft").Text(" WHERE id = ").Arg(1)
 	}).Do()
 	// 打印日志:
-	// level: info, operator: admin1013, desc: update product, SQL: Update product SET status = ? WHERE id = ?; args: draft(string) 1(int), affected: 1, cost: 20ms
+	// level: info; operator: admin1013; desc: update product; SQL: Update product SET status = ? WHERE id = ?; args: draft(string) 1(int); affected: 1; cost: 20ms
 }
 
 type myLogger struct {
@@ -34,22 +34,22 @@ type myLogger struct {
 
 func (l myLogger) Debug(ctx context.Context, msg string) {
 	opr, _ := ctx.Value("operator").(string)
-	fmt.Printf("level: debug, operator: %s, %s\n", opr, msg)
+	fmt.Printf("level: debug; operator: %s; %s\n", opr, msg)
 }
 
 func (l myLogger) Info(ctx context.Context, msg string) {
 	opr, _ := ctx.Value("operator").(string)
-	fmt.Printf("level: info, operator: %s, %s\n", opr, msg)
+	fmt.Printf("level: info; operator: %s; %s\n", opr, msg)
 }
 
 func (l myLogger) Warn(ctx context.Context, msg string) {
 	opr, _ := ctx.Value("operator").(string)
-	fmt.Printf("level: warn, operator: %s, %s\n", opr, msg)
+	fmt.Printf("level: warn; operator: %s; %s\n", opr, msg)
 }
 
 func (l myLogger) Error(ctx context.Context, msg string) {
 	opr, _ := ctx.Value("operator").(string)
-	fmt.Printf("level: error, operator: %s, %s\n", opr, msg)
+	fmt.Printf("level: error; operator: %s; %s\n", opr, msg)
 }
 
 ```
