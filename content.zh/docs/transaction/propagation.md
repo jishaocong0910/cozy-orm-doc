@@ -35,7 +35,9 @@ func DeductInventory(ctx context.Context, order *Order) error {
 			return errors.New("not enough stock")
 		}
 
-		db.Update[Inventory](ctx).Must().Set("stock", remainingStock).Cond(func(c *orm.Cond) {
+		db.Update[Inventory](ctx).Must().Assignment(func(a *orm.Assignment) {
+			a.SetValue("stock", remainingStock)
+		}).Cond(func(c *orm.Cond) {
 			c.Eq("id", inventory.Id)
 		}).Do()
 

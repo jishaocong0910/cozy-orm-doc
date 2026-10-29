@@ -22,7 +22,7 @@ weight: 4
 func main() {
 	// ...
 
-	emails, _ := db.Query[orm.Tuple2[int64, *string]](nil).BuildSql(func(b *orm.SQLBuilder) {
+	emails, _ := db.Query[orm.Tuple2[int64, *string](nil).BuildSql(func(b *orm.SQLBuilder) {
 		b.Text("SELECT id, email FROM user WHERE id IN(1, 2, 3)")
 	}).Do()
 
@@ -30,7 +30,7 @@ func main() {
 		fmt.Println(t.Field1, t.Field2)
 	}
 
-	orders, _ := db.Query[orm.Tuple3[int64, int64, int64]](nil).BuildSql(func(b *orm.SQLBuilder) {
+	orders, _ := db.Query[orm.Tuple3[int64, int64, int64](nil).BuildSql(func(b *orm.SQLBuilder) {
 		b.Text("SELECT user_id, COUNT(*), SUM(order_amount) FROM order " +
 			"WHERE status = 'paid' AND user_id IN(1, 2, 3) GROUP BY user_id")
 	}).Do()
