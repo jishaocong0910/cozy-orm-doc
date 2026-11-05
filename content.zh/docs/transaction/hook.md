@@ -18,22 +18,23 @@ weight: 3
 *Example*
 
 ```go
-// 保存操作日志
-func SaveOperationLog(ctx context.Context, log *OperationLog) error {
-	ctx2 := context.WithValue(ctx, "foo", "bar")
-
-    // 若ctx2存在事务，则在事务提交之前插入操作日志，hookCtx等于ctx2，因此会加入已存在的事务。
-	if h, ok := db.TxHook(ctx2); ok {
+// 导入文件的数据
+func ImportFile(ctx context.Context, fileUrl string) error {
+    ctx2 := context.WithValue(ctx, "foo", "bar")
+	
+	// 若ctx2存在事务，则在事务提交之前插入导入文件任务记录（后续再处理），hookCtx等于ctx2，因此会加入已存在的事务。
+	if h, ok := db.TxHook(ctx); ok {
 		h.BeforeCommitSync(func(hookCtx context.Context) error {
-			_, err := db.Insert[OperationLog](hookCtx).Must().Entities(log).Do()
-			return err
+			contentType, _ := ctx.Value("Content-Type").(string)
+			db.Insert[ImportFileTask](hookCtx).Entities(&ImportFileTask{
+				FileUrl:     fileUrl,
+				ContentType: contentType,
+			}).Do()
+			return nil
 		})
 	} else {
-		// 若ctx不存在事务，则直接保存操作日志。
-		_, err := db.Insert[OperationLog](ctx).Entities(log).Do()
-		if err != nil {
-			return err
-		}
+		// 若ctx不存在事务，则直接导入数据。
+		doImportFile(ctx, fileUrl)
 	}
 	return nil
 }
@@ -48,16 +49,16 @@ func SaveOperationLog(ctx context.Context, log *OperationLog) error {
 ```go
 // 导入文件的数据
 func ImportFile(ctx context.Context, fileUrl string) error {
-	// 若ctx存在事务，则在事务提交成功后，导入Excel数据。
+	// 若ctx存在事务，则在事务提交成功后，导入文件。
 	if h, ok := db.TxHook(ctx); ok {
 		h.AfterCompleteAsync(func(hookCtx context.Context, commit bool) {
 			if commit {
-				doImportExcelFile(ctx, fileUrl)
+                doImportFile(ctx, fileUrl)
 			}
 		}, "Content-Type") // 复制ctx中指定key
 	} else {
-		// 若ctx不存在事务，则直接导入数据。
-		doImportExcelFile(ctx, fileUrl)
+		// 若ctx不存在事务，则直接导入文件。
+		doImportFile(ctx, fileUrl)
 	}
 	return nil
 }
