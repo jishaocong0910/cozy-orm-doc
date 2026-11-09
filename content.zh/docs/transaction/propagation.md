@@ -5,12 +5,14 @@ weight: 2
 
 # 事务传播
 
-执行器、事务实例和事务钩子会检查`ctx`参数中是否存在所属DB实例创建的事务连接（`*sql.Tx`）。若存在，即表明`ctx`中已有事务，执行器、事务钩子、事务实例都会加入它。若不存在，执行器和事务钩子以非事务执行，事务实例则会创建新的事务连接并设置到`ctx`中。
+执行器、事务实例和事务钩子会检查`ctx`参数中是否存在自己所属DB实例创建的事务连接（`*sql.Tx`）。若存在，即表明`ctx`中存在事务，执行器、事务钩子、事务实例都会加入它。若不存在，执行器和事务钩子以非事务执行，事务实例则会创建新的事务连接并设置到`ctx`中。
 
-以下示例中，调用`createOrder`时，两个函数会在同一个事务中执行。
+在业务中判断`ctx`是否存在事务可使用方法`orm.DB.InTx`。
+
+*Example*
 
 ```go
-// 创建订单
+// 创建订单同时扣减库存，DeductInventory函数将在相同事务中执行。
 func CreateOrder(ctx context.Context, order *Order, payment *Payment) error {
 	return db.Tx(ctx).Do(func(ctx context.Context) error {
 		db.Insert[Order](ctx).Must().Entities(order).Do()
