@@ -7,7 +7,7 @@ weight: 3
 
 事务钩子是在事务实例生命周期的特定节点调用自定义函数的功能。通过`orm.DB.TxHook(ctx context.Context) (*orm.txHook, bool)`注册事务钩子，当`ctx`存在事务才会注册成功，返回`*orm.txHook`和true，否则返回`nil`和false，钩子开始执行时无法再注册钩子。
 
-`*orm.txHook`是一个事务钩子实例，提供了以下方法用于绑定自定义函数。
+`orm.txHook`是一个事务钩子实例，提供了以下方法用于绑定自定义函数。
 
 ## BeforeCommitSync
 
@@ -44,7 +44,7 @@ func ImportFile(ctx context.Context, fileUrl string) error {
 
 在事务完成后异步执行。
 
-方法参数：`(handler func(ctx context.Context, commit bool), copyCtxKeys ...any)`。`handler`的`ctx`参数基于`context.Background()`创建，`commit`参数在事务提交成功时为true、回滚时为false。若`handler`发生`panic`，会被恢复并打印错误日志。`copyCtxKeys`用于指定需要从事务钩子的`ctx`复制到`handler`的`ctx`中的key。
+方法参数：`(handler func(ctx context.Context, commit bool), copyCtxKeys ...any)`。`handler`的`ctx`参数基于`context.Background()`创建，`commit`参数在事务提交成功时为true、回滚时为false。若`handler`发生panic，会被恢复并打印错误日志。`copyCtxKeys`用于指定需要从事务钩子的`ctx`复制到`handler`的`ctx`中的key。
 
 ```go
 // 导入文件的数据
