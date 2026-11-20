@@ -24,7 +24,7 @@ weight: 3
 func ImportFile(ctx context.Context, fileUrl string) error {
 	// 若ctx存在事务，则在事务提交之前插入导入文件任务记录（后续再处理）。
 	if h, ok := db.TxHook(ctx); ok {
-		// hookCtx等于ctx，因此会加入已存在的事务。
+		// hookCtx等于ctx，使用hookCtx执行SQL时会加入已存在的事务。
 		h.BeforeCommit(func(hookCtx context.Context) error {
 			contentType, _ := ctx.Value("Content-Type").(string)
 			db.Insert[ImportFileTask](hookCtx).Entities(&ImportFileTask{
@@ -52,7 +52,7 @@ func ImportFile(ctx context.Context, fileUrl string) error {
 func ImportFile(ctx context.Context, fileUrl string) error {
 	// 若ctx存在事务，则在事务提交成功后，导入文件。
 	if h, ok := db.TxHook(ctx); ok {
-		// hookCtx不等于ctx，不会加入原的事务。
+		// hookCtx是基于context.Background()创建的新变量，不存在事务。
 		h.AfterComplete(func(hookCtx context.Context, commit bool) {
 			if commit {
  				doImportFile(ctx, fileUrl)
