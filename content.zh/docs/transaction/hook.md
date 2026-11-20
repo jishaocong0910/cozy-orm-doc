@@ -5,26 +5,25 @@ weight: 3
 
 # 事务钩子
 
-事务钩子是在事务实例生命周期的特定节点调用自定义函数的功能。通过`orm.DB.TxHook(ctx context.Context) (*orm.txHook, bool)`注册事务钩子，当`ctx`存在事务才会注册成功，返回`*orm.txHook`和true，否则返回`nil`和false，钩子开始执行时无法再注册钩子。
+事务钩子是在事务实例生命周期的特定节点调用自定义函数的功能。通过`orm.DB.TxHook(ctx context.Context) (*orm.txHook, bool)`注册事务钩子，当`ctx`存在事务才会注册成功，返回`*orm.txHook`和true，否则返回`nil`和false。
 
 `orm.txHook`是一个事务钩子实例，提供了以下方法用于绑定自定义函数。
 
-## BeforeCommitSync
+## BeforeCommit
 
-在事务提交前同步执行。
+在事务提交前执行。
 
-方法参数：`(handler func(ctx context.Context) error)`。`handler`函数的返回值`error`会被事务实例返回，`ctx`参数等于事务钩子实例的`ctx`。
+方法参数：`(handler func(ctx context.Context) error)`。`handler`函数的返回值`error`会被事务实例返回，`handler`的`ctx`参数为事务钩子实例的`ctx`，即可以在相同事务下执行。
 
 *Example*
 
 ```go
 // 导入文件的数据
 func ImportFile(ctx context.Context, fileUrl string) error {
-    ctx2 := context.WithValue(ctx, "foo", "bar")
-	
-	// 若ctx2存在事务，则在事务提交之前插入导入文件任务记录（后续再处理），hookCtx等于ctx2，因此会加入已存在的事务。
+	// 若ctx存在事务，则在事务提交之前插入导入文件任务记录（后续再处理）。
 	if h, ok := db.TxHook(ctx); ok {
-		h.BeforeCommitSync(func(hookCtx context.Context) error {
+		// hookCtx等于ctx，因此会加入已存在的事务。
+		h.BeforeCommit(func(hookCtx context.Context) error {
 			contentType, _ := ctx.Value("Content-Type").(string)
 			db.Insert[ImportFileTask](hookCtx).Entities(&ImportFileTask{
 				FileUrl:     fileUrl,
@@ -40,20 +39,21 @@ func ImportFile(ctx context.Context, fileUrl string) error {
 }
 ```
 
-## AfterCompleteAsync
+## AfterComplete
 
-在事务完成后异步执行。
+在事务完成后执行。
 
-方法参数：`(handler func(ctx context.Context, commit bool), copyCtxKeys ...any)`。`handler`的`ctx`参数基于`context.Background()`创建，`commit`参数在事务提交成功时为true、回滚时为false。若`handler`发生panic，会被恢复并打印错误日志。`copyCtxKeys`用于指定需要从事务钩子的`ctx`复制到`handler`的`ctx`中的key。
+方法参数：`(handler func(ctx context.Context, commit bool), copyCtxKeys ...any)`。`handler`的`ctx`参数基于`context.Background()`创建，`commit`参数在事务提交成功时为true、回滚时为false。若`handler`发生panic，会被恢复并打印错误日志，原事务依然是成功的，不会返回错误。`copyCtxKeys`用于指定需要从事务钩子的`ctx`复制到`handler`的`ctx`中的key。
 
 ```go
 // 导入文件的数据
 func ImportFile(ctx context.Context, fileUrl string) error {
 	// 若ctx存在事务，则在事务提交成功后，导入文件。
 	if h, ok := db.TxHook(ctx); ok {
-		h.AfterCompleteAsync(func(hookCtx context.Context, commit bool) {
+		// hookCtx不等于ctx，不会加入原的事务。
+		h.AfterComplete(func(hookCtx context.Context, commit bool) {
 			if commit {
-                doImportFile(ctx, fileUrl)
+ 				doImportFile(ctx, fileUrl)
 			}
 		}, "Content-Type") // 复制ctx中指定key
 	} else {
