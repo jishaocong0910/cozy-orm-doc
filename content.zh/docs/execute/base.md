@@ -5,19 +5,19 @@ weight: 3
 
 # 基础执行器
 
-基础执行器是CozyORM的核心功能，它通过自定义SQL执行，并且兼容数据库获取生成Key的机制。
+基础执行器是 CozyORM 的核心功能，它通过自定义 SQL 执行，并且兼容数据库获取生成 Key 的机制。
 
 ## 执行器
 
 ### Query
 
-`Query`执行器使用方法`orm.DB.Query[E]`创建，其中泛型`E`必须是结构体，用于执行SELECT语句，底层使用方法`sql.Stmt.QueryContext`执行。
+`Query` 执行器使用方法 `orm.DB.Query[E]` 创建，其中泛型 `E` 必须是结构体，用于执行 SELECT 语句，底层使用方法 `sql.Stmt.QueryContext` 执行。
 
 | 方法                                                   | 描述                                                             |
 |--------------------------------------------------------|------------------------------------------------------------------|
-| {{<code>}}BuildSql(func(b *orm.SQLBuilder)){{</code>}} | 构建SQL处理函数，详见[SQL构建器](#sql构建器)                     |
-| `Map(...*E)`                                           | 将查询结果映射到指定的实体，指定后`Do`方法将不会再返回查询结果。 |
-| `Do() ([]*E, error)`                                   | 执行SQL并返回实体。                                              |
+| {{<code>}}BuildSql(func(b *orm.SQLBuilder)){{</code>}} | 构建 SQL 处理函数，详见 [SQL 构建器](#sql-构建器)                     |
+| `Map(...*E)`                                           | 将查询结果映射到指定的实体，指定后 `Do` 方法将不会再返回查询结果。 |
+| `Do() ([]*E, error)`                                   | 执行 SQL 并返回实体。                                              |
 
 *Example*
 
@@ -29,13 +29,13 @@ users, _ := db.Query[User](nil).BuildSql(func(b *orm.SQLBuilder) {
 
 ### Mutation
 
-`Mutation`执行器使用方法`orm.DB.Mutation`创建，用于执行INSERT、UPDATE和DELETE语句，底层使用方法`sql.Stmt.ExecContext`执行。
+`Mutation` 执行器使用方法 `orm.DB.Mutation` 创建，用于执行 INSERT、UPDATE 和 DELETE 语句，底层使用方法 `sql.Stmt.ExecContext` 执行。
 
 | 方法                                                   | 描述                                                                                                                                                                                                                                        |
 |--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| {{<code>}}BuildSql(func(b *orm.SQLBuilder)){{</code>}} | 构建SQL处理函数，详见[SQL构建器](#sql构建器)                                                                                                                                                                                                |
-| `MapIdentity[E]( ...*E)`                               | 将`sql.Result.LastInsertId`方法返回的ID值映射到指定实体。需配置[获取生成Key模式](../../db_instance/config/#获取生成key模式)为`FirstInsertId`或`LastInsertId`，泛型`E`必须是一个有且仅有一个带`auto`[标签](../../entity/tag)字段的实体类型。 |
-| `Do() (int64, error)`                                  | 执行SQL并返回影响行数。                                                                                                                                                                                                                     |
+| {{<code>}}BuildSql(func(b *orm.SQLBuilder)){{</code>}} | 构建 SQL 处理函数，详见 [SQL 构建器](#sql-构建器)                                                                                                                                                                                                |
+| `MapIdentity[E]( ...*E)`                               | 将 `sql.Result.LastInsertId` 方法返回的 ID 值映射到指定实体。需配置[获取生成 Key 模式](../../db_instance/config/#获取生成key模式)为 `FirstInsertId` 或 `LastInsertId`，泛型 `E` 必须是一个有且仅有一个带 `auto` [标签](../../entity/tag)字段的实体类型。 |
+| `Do() (int64, error)`                                  | 执行 SQL 并返回影响行数。                                                                                                                                                                                                                     |
 
 *Example*
 
@@ -45,11 +45,11 @@ affected, _ := db.Mutation(nil).BuildSql(func(b *orm.SQLBuilder) {
 }).Do()
 ```
 
-## 获取生成Key
+## 获取生成 Key
 
-对于支持`sql.Result.LastInsertId`方法的数据库，例如MySQL、SQLite，可使用`Mutation`执行器来获取生成的Key。
+对于支持 `sql.Result.LastInsertId` 方法的数据库，例如 MySQL、SQLite，可使用 `Mutation` 执行器来获取生成的 Key。
 
-*Mutation执行器示例*
+*Mutation 执行器示例*
 
 ```go
 type User struct {
@@ -85,9 +85,9 @@ func main() {
 }
 ```
 
-部分数据库不支持`sql.Result.LastInsertId`方法，而是通过查询结果集返回生成Key，例如PostgreSQL、SQL Server。`Query`执行器兼容这种机制。通过`MapTo`方法可将生成的Key映射到实体中。
+部分数据库不支持 `sql.Result.LastInsertId` 方法，而是通过查询结果集返回生成 Key，例如 PostgreSQL、SQL Server。`Query` 执行器兼容这种机制。通过 `MapTo` 方法可将生成的 Key 映射到实体中。
 
-*PostgreSQL获取生成Key（Go原生示例）*
+*PostgreSQL 获取生成 Key（Go 原生示例）*
 
 ```go
 type User struct {
@@ -124,7 +124,7 @@ func main() {
 }
 ```
 
-*PostgreSQL获取生成Key（Query执行器示例）*
+*PostgreSQL 获取生成 Key（Query 执行器示例）*
 
 ```go
 type User struct {
@@ -161,13 +161,13 @@ func main() {
 
 > [!WARNING]
 >
-> 一些处理插入冲突的数据库方言可能导致获取的生成Key不准确，例如：
+> 一些处理插入冲突的数据库方言可能导致获取的生成 Key 不准确，例如：
 > * MySQL：`ON DUPLICATE KEY UPDATE ...`
 > * SQLite、PostgreSQL：`ON CONFLICT ... DO NOTHING`。
 
-## SQL构建器
+## SQL 构建器
 
-`orm.SQLBuilder`用于动态构建SQL语句和设置参数，提供了以下方法并支持链式调用。
+`orm.SQLBuilder` 用于动态构建 SQL 语句和设置参数，提供了以下方法并支持链式调用。
 
 ### Text
 
@@ -223,7 +223,7 @@ func main() {
 
 ### Quote
 
-拼接引用标识符，限定符由DB实例配置的`IdentifierDelimiter`参数所指定。
+拼接引用标识符，限定符由 DB 实例配置的 `IdentifierDelimiter` 参数所指定。
 
 *Example*
 
@@ -280,7 +280,7 @@ func main() {
 
 ### Arg
 
-拼接参数占位符并设置参数，参数占位符由DB实例配置的`ParamPrefix`参数所指定。
+拼接参数占位符并设置参数，参数占位符由 DB 实例配置的 `ParamPrefix` 参数所指定。
 
 *Example*
 
@@ -346,9 +346,9 @@ db.Query[User](nil).BuildSql(func(b *orm.SQLBuilder) {
 
 ### ForEach
 
-用于遍历切片拼接SQL语句，添加开始、分隔和结束符号。
+用于遍历切片拼接 SQL 语句，添加开始、分隔和结束符号。
 
-方法参数：`(sep separate, items []T, handler func(i int, item T))`。其中`handler`的参数`i`为当前元素的索引，`t`为当前元素。`sep`通过SQL构建器的以下方法指定。
+方法参数：`(sep separate, items []T, handler func(i int, item T))`。其中 `handler` 的参数 `i` 为当前元素的索引，`t` 为当前元素。`sep` 通过 SQL 构建器的以下方法指定。
 
 | 函数                                       | 描述                                                   |
 |--------------------------------------------|--------------------------------------------------------|
@@ -389,9 +389,9 @@ func main() {
 
 ### Accept
 
-接受自定义的SQL拼接。
+接受自定义的 SQL 拼接。
 
-方法参数：`(w SQLWriter)`。`SQLWriter`是一个接口，要求实现`WriteSQL(*SQLBuilder)`方法，用于自定义拼接SQL语句。
+方法参数：`(w SQLWriter)`。`SQLWriter` 是一个接口，要求实现 `WriteSQL(*SQLBuilder)` 方法，用于自定义拼接 SQL 语句。
 
 *Example*
 
@@ -421,7 +421,7 @@ func main() {
 
 ### Cancel
 
-取消SQL的执行，不会返回错误。调用该方法后应立即`return`。
+取消 SQL 的执行，不会返回错误。调用该方法后应立即 `return`。
 
 *Example*
 
@@ -447,7 +447,7 @@ func main() {
 
 ### Error
 
-取消SQL的执行，并返回错误。调用该方法后应立即`return`。
+取消 SQL 的执行，并返回错误。调用该方法后应立即 `return`。
 
 *Example*
 

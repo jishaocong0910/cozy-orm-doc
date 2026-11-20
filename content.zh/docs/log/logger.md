@@ -5,7 +5,7 @@ weight: 1
 
 # 日志记录器
 
-实现`orm.Logger`并配置`orm.Config`的`Logger`和`SqlLogLevel`参数即可打印日志。
+实现 `orm.Logger` 并配置 `orm.Config` 的 `Logger` 和 `SqlLogLevel` 参数即可打印日志。
 
 *Example*
 

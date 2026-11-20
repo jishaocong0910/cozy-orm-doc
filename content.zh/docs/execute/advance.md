@@ -5,13 +5,13 @@ weight: 4
 
 # 高级执行器
 
-高级执行器提供了单表CRUD功能。所有创建执行器的方法都具有一个泛型`E`，泛型必须是实体，且不能是[预定义实体](../../entity/tuple)，**泛型不合法时创建执行器将panic**。
+高级执行器提供了单表 CRUD 功能。所有创建执行器的方法都具有一个泛型 `E`，泛型必须是实体，且不能是[预定义实体](../../entity/tuple)，**泛型不合法时创建执行器将 panic**。
 
 ## 执行器
 
 ### Find
 
-`Find`执行器通过方法`orm.DB.Find[E]`创建，用于查询多行记录。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
+`Find` 执行器通过方法 `orm.DB.Find[E]` 创建，用于查询多行记录。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
 
 | 方法                              | 描述                                                         |
 |-----------------------------------|--------------------------------------------------------------|
@@ -21,7 +21,7 @@ weight: 4
 | `OrderBy(func(o *orm.OrderBy))`   | 排序处理函数，详见[排序](#排序)。                            |
 | `Page(offset int, rowCount int) ` | 分页，需配置[分页模式](../../db_instance/config/#分页模式)。 |
 | `IncludeDeleted()`                | 包含软删除的数据（启用软删除模式时使用）。                   |
-| `LastClause(string)`              | SQL末尾的子句，例如`FOR UPDATE`。                            |
+| `LastClause(string)`              | SQL 末尾的子句，例如 `FOR UPDATE`。                            |
 | `Do() ([]*E, error)`              | 执行并返回实体。                                             |
 
 *Example*
@@ -54,28 +54,28 @@ func main() {
 
 ### FindOne
 
-`FindOne`执行器通过方法`orm.DB.FindOne[E]`创建，它基于`Find`执行器，用于查询单行记录。
+`FindOne` 执行器通过方法 `orm.DB.FindOne[E]` 创建，它基于 `Find` 执行器，用于查询单行记录。
 
 | 方法                              | 描述                                                 |
 |-----------------------------------|------------------------------------------------------|
-| `Select(...string)`               | 同`Find`执行器。                                     |
-| `OnDemand(*orm.Demand)`           | 同`Find`执行器。                                     |
-| `Cond(func(c *orm.Cond))`         | 同`Find`执行器。                                     |
-| `OrderBy(func(o *orm.OrderBy))`   | 同`Find`执行器。                                     |
-| `Page(offset int, rowCount int) ` | 同`Find`执行器。                                     |
-| `IncludeDeleted()`                | 同`Find`执行器。                                     |
-| `LastClause(string)`              | 同`Find`执行器。                                     |
+| `Select(...string)`               | 同 `Find` 执行器。                                     |
+| `OnDemand(*orm.Demand)`           | 同 `Find` 执行器。                                     |
+| `Cond(func(c *orm.Cond))`         | 同 `Find` 执行器。                                     |
+| `OrderBy(func(o *orm.OrderBy))`   | 同 `Find` 执行器。                                     |
+| `Page(offset int, rowCount int) ` | 同 `Find` 执行器。                                     |
+| `IncludeDeleted()`                | 同 `Find` 执行器。                                     |
+| `LastClause(string)`              | 同 `Find` 执行器。                                     |
 | `Lenient()`                       | 指示查询到多行记录时返回首个记录（默认为返回错误）。 |
 | `Do() (*E, error)`                | 执行并返回实体。                                     |
 
 ### Insert
 
-`Insert`执行器通过方法`orm.DB.Insert[E]`创建，用于插入记录。支持所有[获取生成Key模式](../../db_instance/config/#获取生成key模式)。
+`Insert` 执行器通过方法 `orm.DB.Insert[E]` 创建，用于插入记录。支持所有[获取生成 Key 模式](../../db_instance/config/#获取生成key模式)。
 
 | 方法                  | 描述                                                                           |
 |-----------------------|--------------------------------------------------------------------------------|
-| `Entities(...*E)`     | 插入的实体，只会插入非`nil`字段。若插入多个实体，则以首个实体的非nil字段为准。 |
-| `Required(...string)` | 必定会插入的字段，若值为`nil`，则插入`null`。                                  |
+| `Entities(...*E)`     | 插入的实体，只会插入非 `nil` 字段。若插入多个实体，则以首个实体的非 nil 字段为准。 |
+| `Required(...string)` | 必定会插入的字段，若值为 `nil`，则插入 `null`。                                  |
 | `Do() (int64, error)` | 执行并返回影响行数。                                                           |
 
 *Example*
@@ -124,12 +124,12 @@ func main() {
 
 ### Update
 
-`Update`执行器通过方法`orm.DB.Update[E]`创建，用于更新记录。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
+`Update` 执行器通过方法 `orm.DB.Update[E]` 创建，用于更新记录。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
 
 | 方法                                                         | 描述                                                                                                         |
 |--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| `Entity(*E)`                                                 | 更新的实体，只会更新非`nil`字段。带`pk`[标签](../../entity/tag)的字段不会被更新，且非`nil`时会自动作为条件。 |
-| `Required(...string)`                                        | 必定会更新的字段，若值为`nil`，则更新为`null`。                                                              |
+| `Entity(*E)`                                                 | 更新的实体，只会更新非 `nil` 字段。带 `pk` [标签](../../entity/tag)的字段不会被更新，且非 `nil` 时会自动作为条件。 |
+| `Required(...string)`                                        | 必定会更新的字段，若值为 `nil`，则更新为 `null`。                                                              |
 | `OnDemand(*orm.Demand)`                                      | 按需指定更新的表字段，详见[按需字段](#按需字段)。                                                            |
 | {{<code>}}Assignment(handler func(a *Assignment)){{</code>}} | 字段赋值处理函数，详见[字段赋值](#字段赋值)。                                                                |
 | {{<code>}}Cond(func(c *orm.Cond)){{</code>}}                 | 条件处理函数，详见[查询条件](#查询条件)。                                                                    |
@@ -176,12 +176,12 @@ func main() {
 
 ### UpdateBatch
 
-`UpdateBatch`执行器通过方法`orm.DB.UpdateBatch[E]`创建，用于批量按行更新记录。它要求实体`E`必须有且仅有一个带`pk`[标签](../../entity/tag)的字段，更新的实体中该字段不能为`nil`。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
+`UpdateBatch` 执行器通过方法 `orm.DB.UpdateBatch[E]` 创建，用于批量按行更新记录。它要求实体 `E` 必须有且仅有一个带 `pk` [标签](../../entity/tag)的字段，更新的实体中该字段不能为 `nil`。如果配置了[软删除模式](../../db_instance/column_policy/#软删除模式)，会自动添加正常（未删除）数据的过滤条件。
 
 | 方法                                                         | 描述                                                                                                                                                                                          |
 |--------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Entities(... *E)`                                           | 更新的实体，只会更新非`nil`字段，若更新多个实体，则以首个实体的非nil字段为准。带`pk`[标签](../../entity/tag)的不会被更新，会自动作为更新条件，且必须不为`nil`。**实体为空时执行器不会执行**。 |
-| `Required(...string)`                                        | 必定会更新的字段，若值为`nil`，则插入`null`。                                                                                                                                                 |
+| `Entities(... *E)`                                           | 更新的实体，只会更新非 `nil` 字段，若更新多个实体，则以首个实体的非 nil 字段为准。带 `pk` [标签](../../entity/tag)的不会被更新，会自动作为更新条件，且必须不为 `nil`。**实体为空时执行器不会执行**。 |
+| `Required(...string)`                                        | 必定会更新的字段，若值为 `nil`，则插入 `null`。                                                                                                                                                 |
 | `OnDemand(*orm.Demand)`                                      | 按需指定更新的表字段，详见[按需字段](#按需字段)。                                                                                                                                             |
 | {{<code>}}Assignment(handler func(a *Assignment)){{</code>}} | 字段赋值处理函数，详见[字段赋值](#字段赋值)。实体为空时即使设置了字段赋值也不会执行。                                                                                                         |
 | {{<code>}}Cond(func(c *orm.Cond)){{</code>}}                 | 条件处理函数，详见[查询条件](#查询条件)。                                                                                                                                                     |
@@ -256,7 +256,7 @@ func main() {
 
 ### Delete
 
-`Delete`执行器通过方法`orm.DB.Delete[E]`创建，用于物理删除记录。
+`Delete` 执行器通过方法 `orm.DB.Delete[E]` 创建，用于物理删除记录。
 
 | 方法                                      | 描述                                                          |
 |-------------------------------------------|---------------------------------------------------------------|
@@ -277,7 +277,7 @@ affected, _ := db.Delete[User](nil).Cond(func(c *orm.Cond) {
 
 ### DeleteSoftly
 
-`DeleteSoftly`执行器通过方法`orm.DB.DeleteSoftly[E]`创建，用于软删除记录。必须配置[软删除模式](../../db_instance/column_policy/#软删除模式)才可使用。
+`DeleteSoftly` 执行器通过方法 `orm.DB.DeleteSoftly[E]` 创建，用于软删除记录。必须配置[软删除模式](../../db_instance/column_policy/#软删除模式)才可使用。
 
 
 | 方法                      | 描述                                      |
@@ -316,13 +316,13 @@ func main() {
 
 ## 排序
 
-`orm.OrderBy`用于指定查询语句的排序列表。
+`orm.OrderBy` 用于指定查询语句的排序列表。
 
 | 方法                  | 描述                                                         |
 |-----------------------|--------------------------------------------------------------|
 | `Asc(column string)`  | 正序                                                         |
 | `Desc(column string)` | 倒序                                                         |
-| `Error(err error)`    | 设置错误，执行器将不会执行并返回该错误。调用后应立即return。 |
+| `Error(err error)`    | 设置错误，执行器将不会执行并返回该错误。调用后应立即 return。 |
 
 *Example*
 
@@ -350,13 +350,13 @@ products, err := db.Find[Product](nil).Select("id", "title", "description").Cond
 
 ## 字段赋值
 
-`orm.Assignment`用于设置指定字段的值，即UPDATE语句的赋值列表。
+`orm.Assignment` 用于设置指定字段的值，即 UPDATE 语句的赋值列表。
 
 | 方法                                                               | 描述                                                         |
 |--------------------------------------------------------------------|--------------------------------------------------------------|
 | `SetValue(column string, value any)`                               | 设置值。                                                     |
-| {{<code>}}SetExpr(column string, handler func(e *Expr)){{</code>}} | 设置字段为拼接的SQL表达式和参数。                            |
-| `Error(err error)`                                                 | 设置错误，执行器将不会执行并返回该错误。调用后应立即return。 |
+| {{<code>}}SetExpr(column string, handler func(e *Expr)){{</code>}} | 设置字段为拼接的 SQL 表达式和参数。                            |
+| `Error(err error)`                                                 | 设置错误，执行器将不会执行并返回该错误。调用后应立即 return。 |
 
 *Example*
 
@@ -382,28 +382,28 @@ affected, err := db.Update[Account](nil).Assignment(func(a *orm.Assignment) {
 
 ## 字段更新优先级
 
-以下字段一定出现在`Update`和`UpdateBatch`执行器的更新字段列表中：
+以下字段一定出现在 `Update` 和 `UpdateBatch` 执行器的更新字段列表中：
 
-* `OnDemand`参数匹配的字段。
-* 无`OnDemand`参数时，更新的实体中非nil字段。
-* `Assignment`参数设置的值，`Required`指定的字段，[字段策略](../../db_instance/column_policy/#字段策略)命中字段。
+* `OnDemand` 参数匹配的字段。
+* 无 `OnDemand` 参数时，更新的实体中非 nil 字段。
+* `Assignment` 参数设置的值，`Required` 指定的字段，[字段策略](../../db_instance/column_policy/#字段策略)命中字段。
 
 字段的赋值优先级按以下顺序：
 
 1. 强制的字段策略生成的值。
-2. `Assignment`参数设置的值。
-3. 非`nil`的实体字段值。
+2. `Assignment` 参数设置的值。
+3. 非 `nil` 的实体字段值。
 4. 非强制的字段策略生成的值。
 
 ## 按需字段
 
 高级执行器的查询/更新操作，可通过任意结构体来确定需要查询/更新的字段。这个结构体对于查询操作来说，是一个最终会被映射的目标，对于更新操作，则是更新数据的来源。
 
-执行器的`OnDemand`参数用于设置字段需求，字段需求通过`orm.DemandFor[D]()`创建，其中`D`必须是结构体。`D`与`E`名称相同的字段将被作为需求字段。
+执行器的 `OnDemand` 参数用于设置字段需求，字段需求通过 `orm.DemandFor[D]()` 创建，其中 `D` 必须是结构体。`D` 与 `E` 名称相同的字段将被作为需求字段。
 
 *查询按需字段示例*
 
-假设有个Http接口用于查询简单的用户信息，可根据接口的响应体来确定查询字段。
+假设有个 Http 接口用于查询简单的用户信息，可根据接口的响应体来确定查询字段。
 
 ```go
 // user表实体
@@ -457,7 +457,7 @@ func main() {
 
 *更新按需字段示例*
 
-假设有个Http接口用于更新用户信息，可根据接口请求体来确定更新的字段。
+假设有个 Http 接口用于更新用户信息，可根据接口请求体来确定更新的字段。
 
 ```go
 // user表实体
@@ -506,7 +506,7 @@ func main() {
 
 ## 查询条件
 
-`orm.Cond`提供了各种方法用于拼接条件，支持链式调用。
+`orm.Cond` 提供了各种方法用于拼接条件，支持链式调用。
 
 | 方法                                         | 条件操作符/表达式/描述                              |
 |----------------------------------------------|-----------------------------------------------------|
@@ -524,8 +524,8 @@ func main() {
 | `Between(column string, min, max any)`       | `BETWEEN ... AND ...`                               |
 | `IsNull(column string)`                      | `IS NULL`                                           |
 | `IsNotNull(column string)`                   | `IS NOT NULL`                                       |
-| `Not()`                                      | 下个条件增加`NOT`修饰。                             |
-| `Or()`                                       | 下个条件使用`OR`连接。                              |
+| `Not()`                                      | 下个条件增加 `NOT` 修饰。                             |
+| `Or()`                                       | 下个条件使用 `OR` 连接。                              |
 | `Sub(func(c *orm.Cond))`                     | 子条件处理函数，详见[子条件](#子条件)。             |
 | `Expr(func(c *orm.CondExpr))`                | 条件表达式处理函数，详见[条件表达式](#条件表达式)。 |
 
@@ -568,7 +568,7 @@ func FindOrders(ctx context.Context, userId int64, merchantId int64, orderNo *st
 
 ### 子条件
 
-`Sub`方法用于创建子条件，子条件会自动添加括号对
+`Sub` 方法用于创建子条件，子条件会自动添加括号对
 
 *Example*
 
@@ -592,7 +592,7 @@ func GetOrder(ctx context.Context, userId int64, merchantId int64, orderNo strin
 
 ### 条件表达式
 
-`Expr`方法用于拼接SQL表达式和参数。整个表达式会视为一个子条件，自动添加括号对。
+`Expr` 方法用于拼接 SQL 表达式和参数。整个表达式会视为一个子条件，自动添加括号对。
 
 *Example*
 
