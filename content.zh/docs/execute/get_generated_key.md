@@ -11,12 +11,12 @@ weight: 5
 
 `orm.GetGeneratedKeyMode_` 提供了以下选项。`Mutation` 只支持 `FirstInsertId` 和 `LastInsertId` 模式，`Insert` 支持所有模式。
 
-| 选项            | 描述                                                                                                                                                 | 
-|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| FirstInsertId   | 将 `sql.Result.LastInsertId()` 的返回值作为第一条插入记录的 ID，可适配 MySQL。                                                                           |
-| LastInsertId    | 将 `sql.Result.LastInsertId()` 的返回值作为最后一条插入记录的 ID，可适配 SQLite。                                                                        |
-| InsertReturning | 通过 `INSERT ... RETURNING ...` 语法返回生成的 Key，可适配 PostgreSQL、SQLite。                                                                          |
-| SQLServer       | 通过 SQL Server 的 `INSERT ... OUTPUT ...` 语法返回生成的 Key，专门适配 SQL Server。                                                                       |
+| 选项            | 描述                                                                                                                                                         | 
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| FirstInsertId   | 将 `sql.Result.LastInsertId()` 的返回值作为第一条插入记录的 ID，可适配 MySQL。                                                                               |
+| LastInsertId    | 将 `sql.Result.LastInsertId()` 的返回值作为最后一条插入记录的 ID，可适配 SQLite。                                                                            |
+| InsertReturning | 通过 `INSERT ... RETURNING ...` 语法返回生成的 Key，可适配 PostgreSQL、SQLite。                                                                              |
+| SQLServer       | 通过 SQL Server 的 `INSERT ... OUTPUT ...` 语法返回生成的 Key，专门适配 SQL Server。                                                                         |
 | Oracle          | 通过 Oracle 的 `INSERT ... RETURNING ... INTO ...` 语法返回生成的 Key，专门适配 Oracle，只支持被 {{<code>}}GENERATED ... AS IDENTITY{{</code>}} 修饰的字段。 |
 
 ## 限制

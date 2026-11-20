@@ -7,9 +7,11 @@ weight: 3
 
 事务钩子是在事务实例生命周期的特定节点调用自定义函数的功能。通过 `orm.DB.TxHook(ctx context.Context) (*orm.txHook, bool)` 注册事务钩子，当 `ctx` 存在事务才会注册成功，返回 `*orm.txHook` 和 true，否则返回 `nil` 和 false。
 
-`orm.txHook` 是一个事务钩子实例，提供了以下方法用于绑定自定义函数。
+## 钩子节点
 
-## BeforeCommit
+`orm.txHook` 是一个事务钩子实例，提供了以下方法用于绑定对应节点的自定义函数。
+
+### BeforeCommit
 
 在事务提交前执行。
 
@@ -39,7 +41,7 @@ func ImportFile(ctx context.Context, fileUrl string) error {
 }
 ```
 
-## AfterComplete
+### AfterComplete
 
 在事务完成后执行。
 
@@ -61,5 +63,42 @@ func ImportFile(ctx context.Context, fileUrl string) error {
 		doImportFile(ctx, fileUrl)
 	}
 	return nil
+}
+```
+
+## 限制
+
+事务实例执行钩子前会关闭钩子的注册，因此在钩子中注册钩子将会失败。
+
+*Example*
+
+```go
+func main() {
+	db.Tx(nil).Do(func(ctx context.Context) error {
+		registerHook1(ctx)
+		return nil
+	})
+}
+
+func registerHook1(ctx context.Context) {
+	h, ok := db.TxHook(ctx)
+	fmt.Println(ok) // true
+
+	// 执行BeforeCommit时已关闭注册钩子，因此registerHook2、registerHook3都注册失败
+	h.BeforeCommit(func(ctx context.Context) error {
+		registerHook2(ctx)
+		registerHook3(ctx)
+		return nil
+	})
+}
+
+func registerHook2(ctx context.Context) {
+	_, ok := db.TxHook(ctx)
+	fmt.Println(ok) // false
+}
+
+func registerHook3(ctx context.Context) {
+	_, ok := db.TxHook(ctx)
+	fmt.Println(ok) // false
 }
 ```
