@@ -13,10 +13,12 @@ weight: 2
 |--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Must()`                 | 指示发生错误时 panic，并将原错误作为 panic 值（默认为返回错误）。                                                                                                                                  |
 | `Description(string)`    | 用于描述 SQL 业务，打印在 SQL 日志里。                                                                                                                                                             |
-| `SqlLogLevel(orm.Level)` | 指定 SQL 日志的级别。通过[枚举](../../db_instance/config/#枚举) `orm.LogLevel_` 选择，优先级高于 DB 实例配置的 `SqlLogLevel` 参数。指定为 `orm.Level_.UNDEFINED` 可以忽略打印本次执行的 SQL 日志。 |
+| `SqlLogLevel(orm.LogLevel)` | 指定 SQL 日志的级别。通过[枚举](../../db_instance/config/#枚举) `orm.LogLevel_` 选择，优先级高于 DB 实例配置的 `SqlLogLevel` 参数。指定为 `orm.LogLevel_.UNDEFINED` 可以忽略打印本次执行的 SQL 日志。 |
 
 *Example*
 
 ```go
-db.FindOne[User](ctx).Description("describe the SQL").Cond(orm.Cond().Eq("id", 1)).Do()
+db.FindOne[User](ctx).Description("describe the SQL").Cond(func(c *orm.Cond) {
+	c.Eq("id", 1)
+}).Do()
 ```

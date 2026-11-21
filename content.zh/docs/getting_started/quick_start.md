@@ -78,7 +78,7 @@ func main() {
 		Level:     new(int8(0)),
 		CreateAt:  new(time.Now()),
 	}
-	affected, err := db.Mutation(nil).MapTo[User](u).BuildSql(func(b *orm.SQLBuilder) {
+	affected, err := db.Mutation(nil).MapIdentity[User](u).BuildSql(func(b *orm.SQLBuilder) {
 		b.Text("INSERT INTO user(name, email, phone, avatar_url, address, status, level, create_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
 		b.Args(u.Name, u.Email, u.Phone, u.AvatarUrl, u.Address, u.Status, u.Level, u.CreateAt)
 	}).Do()

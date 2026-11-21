@@ -89,7 +89,7 @@ func main() {
 
 	gen.Config{
 		DB:     db,
-		DBType: orm.DBType_.MySQL,
+		DBType: orm.DBType_.PostgreSQL,
 		Tables: []string{"user", "order"},
 		// 按照顺序匹配
 		TypeMappings: gen.TypeMappings{

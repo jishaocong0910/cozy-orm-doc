@@ -34,7 +34,7 @@ users, _ := db.Query[User](nil).BuildSql(func(b *orm.SQLBuilder) {
 | 方法                                                   | 描述                                                                                                                                                                                                                                                     |
 |--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | {{<code>}}BuildSql(func(b *orm.SQLBuilder)){{</code>}} | 构建 SQL 处理函数，详见 [SQL 构建器](#sql-构建器)                                                                                                                                                                                                        |
-| `MapIdentity[E]( ...*E)`                               | 将 `sql.Result.LastInsertId` 方法返回的 ID 值映射到指定实体。需配置[获取生成 Key 模式](../../db_instance/config/#获取生成key模式)为 `FirstInsertId` 或 `LastInsertId`，泛型 `E` 必须是一个有且仅有一个带 `auto` [标签](../../entity/tag)字段的实体类型。 |
+| `MapIdentity[E]( ...*E)`                               | 将 `sql.Result.LastInsertId` 方法返回的 ID 值映射到指定实体。需配置[获取生成 Key 模式](../get_generated_key/)为 `FirstInsertId` 或 `LastInsertId`，泛型 `E` 必须是一个有且仅有一个带 `auto` [标签](../../entity/tag)字段的实体类型。 |
 | `Do() (int64, error)`                                  | 执行 SQL 并返回影响行数。                                                                                                                                                                                                                                |
 
 *Example*
@@ -344,7 +344,7 @@ func main() {
 		}
 		b.Text("SELECT id, name, email FROM user WHERE id IN")
 		b.ForEach(b.SepWrap("(", ",", ")"), ids, func(_ int, item int64) {
-			b.Text(item)
+			b.Arg(item)
 		})
 	}).Do()
 	// users=[]*User{}, err="ids is empty"

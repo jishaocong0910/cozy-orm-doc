@@ -21,3 +21,4 @@ CozyORM 通过 DB 实例提供的方法创建执行器与数据库交互。执�
 * `UpdateBatch` 批量按行更新记录。
 * `Delete` 删除记录。
 * `DeleteSoftly` 软删除记录。
+* `Count` 查询记录总数。

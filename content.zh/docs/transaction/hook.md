@@ -55,7 +55,7 @@ func ImportFile(ctx context.Context, fileUrl string) error {
 		// hookCtx是基于context.Background()创建的新变量，不存在事务。
 		h.AfterComplete(func(hookCtx context.Context, commit bool) {
 			if commit {
- 				doImportFile(ctx, fileUrl)
+ 				doImportFile(hookCtx, fileUrl)
 			}
 		}, "Content-Type") // 复制ctx中指定key
 	} else {

@@ -40,12 +40,12 @@ func main() {
 		DBType: orm.DBType_.MySQL, //自动配置分页模式
 	}.Build()
 
-	users := db.Find[User](nil).Select("id", "name").
+	users := db.Find[User](nil).Select("Id", "Name").
 		Cond(func(c *orm.Cond) {
-			c.Gt("id", 10)
+			c.Gt("Id", 10)
 		}).
 		OrderBy(func(o *orm.OrderBy) {
-			o.Asc("status").Desc("create_at")
+			o.Asc("Status").Desc("CreateAt")
 		}).Page(0, 10).LastClause("FOR UPDATE").Do()
 	// 执行SQL:
 	// SELECT id, name FROM user WHERE id > 10 ORDER BY status ASC, create_at DESC LIMIT 10 FOR UPDATE
@@ -70,7 +70,7 @@ func main() {
 
 ### Insert
 
-`Insert` 执行器通过方法 `orm.DB.Insert[E]` 创建，用于插入记录。支持所有[获取生成 Key 模式](../../db_instance/config/#获取生成key模式)。
+`Insert` 执行器通过方法 `orm.DB.Insert[E]` 创建，用于插入记录。支持所有[获取生成 Key 模式](../get_generated_key/)。
 
 | 方法                  | 描述                                                                               |
 |-----------------------|------------------------------------------------------------------------------------|
@@ -98,7 +98,7 @@ func main() {
 
 	user := &User{Name: new("Alex")}
 	
-	db.Insert[User](nil).Entities(user).Required("status").Do()
+	db.Insert[User](nil).Entities(user).Required("Status").Do()
 	// 执行SQL:
 	// INSERT INTO user(name, status) VALUES('Alex', NULL) RETURNING id
 	
@@ -158,12 +158,12 @@ func main() {
 
 	user := &User{Id: new(int64(1)), Name: new("Alex"), Email: new("alex@example.com")}
 
-	affected, _ := db.Update[User](nil).Entity(user).Required("status").Assignment(func(a *orm.Assignment) {
-		a.SetExpr("update_at", func(e *orm.Expr) {
+	affected, _ := db.Update[User](nil).Entity(user).Required("Status").Assignment(func(a *orm.Assignment) {
+		a.SetExpr("UpdateAt", func(e *orm.Expr) {
 			e.Text("now()")
 		})
 	}).Cond(func(c *orm.Cond) {
-		c.Eq("status", 1)
+		c.Eq("Status", 1)
 	}).Do()
 	// 执行SQL:
 	// UPDATE user SET name = 'Alex', status = NULL, update_at = now() WHERE id = 1 AND status = 1
@@ -181,7 +181,7 @@ func main() {
 | 方法                                                         | 描述                                                                                                                                                                                                 |
 |--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Entities(... *E)`                                           | 更新的实体，只会更新非 `nil` 字段，若更新多个实体，则以首个实体的非 nil 字段为准。带 `pk` [标签](../../entity/tag)的不会被更新，会自动作为更新条件，且必须不为 `nil`。**实体为空时执行器不会执行**。 |
-| `Required(...string)`                                        | 必定会更新的字段，若值为 `nil`，则插入 `null`。                                                                                                                                                      |
+| `Required(...string)`                                        | 必定会更新的字段，若值为 `nil`，则更新为 `null`。                                                                                                                                                    |
 | `OnDemand(*orm.Demand)`                                      | 按需指定更新的表字段，详见[按需字段](#按需字段)。                                                                                                                                                    |
 | {{<code>}}Assignment(handler func(a *Assignment)){{</code>}} | 字段赋值处理函数，详见[字段赋值](#字段赋值)。实体为空时即使设置了字段赋值也不会执行。                                                                                                                |
 | {{<code>}}Cond(func(c *orm.Cond)){{</code>}}                 | 条件处理函数，详见[查询条件](#查询条件)。                                                                                                                                                            |
@@ -224,11 +224,11 @@ func main() {
 	}
 
     affected, _ := db.UpdateBatch[User](nil).Entities(users...).Assignment(func(a *orm.Assignment) {
-		a.SetExpr("update_at", func(e *orm.Expr) {
+		a.SetExpr("UpdateAt", func(e *orm.Expr) {
 			e.Text("now()")
 		})
-	}).Required("status").Cond(func(c *orm.Cond) {
-		c.Eq("status", 1)
+	}).Required("Status").Cond(func(c *orm.Cond) {
+		c.Eq("Status", 1)
 	}).Do()
 	// 执行SQL:
 	// UPDATE
@@ -307,11 +307,29 @@ func main() {
 	}.Build()
 
 	db.DeleteSoftly[User](nil).Cond(func(c *orm.Cond) {
-		c.Eq("id", 1)
+		c.Eq("Id", 1)
 	}).Do()
 	// 执行SQL: 
 	// UPDATE user SET deleted = id WHERE id = 1 AND deleted = 0
 }
+```
+
+### Count
+
+`Count` 执行器通过方法 `orm.DB.Count[E]` 创建，用于查询记录总数。
+
+| 方法                      | 描述                                       |
+|---------------------------|--------------------------------------------|
+| `Cond(func(c *orm.Cond))` | 条件处理函数，详见[查询条件](#查询条件)。  |
+| `IncludeDeleted()`        | 包含软删除的数据（启用软删除模式时使用）。 |
+| `Do() (int64, error)`     | 执行并返回记录总数。                       |
+
+*Example*
+
+```go
+db.Count[User](nil).Cond(func(c *orm.Cond) {
+	c.Eq("Status", 1)
+})
 ```
 
 ## 排序
@@ -327,19 +345,19 @@ func main() {
 *Example*
 
 ```go
-products, err := db.Find[Product](nil).Select("id", "title", "description").Cond(func(c *orm.Cond) {
+products, err := db.Find[Product](nil).Select("Id", "Title", "Description").Cond(func(c *orm.Cond) {
 	c.Eq("user_id", userId)
 }).OrderBy(func(o *orm.OrderBy) {
 	switch sortType {
 	case 1:
-		o.Asc("title")
+		o.Asc("Title")
 	case 2:
-		o.Desc("update_at")
+		o.Desc("UpdateAt")
 	default:
 		o.Error(errors.New("unknown sort type"))
 		return
 	}
-	o.Asc("id")
+	o.Asc("Id")
 }).Page(1, 20).Do()
 // 当sortType=2时，执行SQL:
 // SELECT id, title, description FROM product ORDER BY update_at DESC, id Asc LIMIT 20, 40
@@ -362,16 +380,16 @@ products, err := db.Find[Product](nil).Select("id", "title", "description").Cond
 
 ```go
 affected, err := db.Update[Account](nil).Assignment(func(a *orm.Assignment) {
-	a.SetValue("update_at", time.Now())
+	a.SetValue("UpdateAt", time.Now())
 	if amount == 0 {
 		a.Error(errors.New("illegal amount"))
 		return
 	}
-	a.SetExpr("balance", func(e *orm.Expr) {
-		e.Text("balance = balance +").Arg(amount)
+	a.SetExpr("Balance", func(e *orm.Expr) {
+		e.Text("balance +").Arg(amount)
 	})
 }).Cond(func(c *orm.Cond) {
-	c.Eq("user_id", userId)
+	c.Eq("UserId", userId)
 }).Do()
 // 当amount>0，执行SQL:
 // UPDATE account SET balance = balance + ?, update_at = ? WHERE user_id = ?
@@ -436,7 +454,7 @@ func main() {
 			//Select("id", "name", "avatar_url"). //硬编码方式
 			OnDemand(orm.DemandFor[UserBasicResp]()).
 			Cond(func(c *orm.Cond) {
-				c.Eq("id", id)
+				c.Eq("Id", id)
 			}).Do()
 		// 执行SQL:
 		// SELECT id, name, avatar_url FROM user WHERE id = ?
@@ -535,24 +553,24 @@ func main() {
 // 查找订单
 func FindOrders(ctx context.Context, userId int64, merchantId int64, orderNo *string, status *int8, startAt *time.Time, endAt *time.Time, page int, pageSize int) ([]*Order, error) {
 	return db.Find[Order](ctx).Cond(func(c *orm.Cond) {
-		c.Eq("user_id", userId).Eq("merchant_id", merchantId)
+		c.Eq("UserId", userId).Eq("MerchantId", merchantId)
 		if orderNo != nil {
-			c.Eq("order_no", orderNo)
+			c.Eq("OrderNo", orderNo)
 		}
 		if status != nil {
-			c.Eq("status", status)
+			c.Eq("Status", status)
 		}
 		if startAt != nil {
 			if endAt != nil {
-				c.Between("create_at", startAt, endAt)
+				c.Between("CreateAt", startAt, endAt)
 			} else {
-				c.Ge("create_at", startAt)
+				c.Ge("CreateAt", startAt)
 			}
 		} else if endAt != nil {
-			c.Le("create_at", endAt)
+			c.Le("CreateAt", endAt)
 		}
 	}).OrderBy(func(o *orm.OrderBy) {
-		o.Asc("id")
+		o.Asc("Id")
 	}).Page((page-1)*pageSize, pageSize).Do()
 	// 当orderNo、startAt、endAt参数不为nil时，执行SQL:
 	// SELECT id, order_no, user_id, merchant_id, amount, status, create_at
@@ -575,10 +593,10 @@ func FindOrders(ctx context.Context, userId int64, merchantId int64, orderNo *st
 ```go
 // 获取用户单个订单
 func GetOrder(ctx context.Context, userId int64, merchantId int64, orderNo string) ([]*Order, error) {
-	return db.Find[Order](ctx).Select("id", "order_no", "user_id", "merchant_id", "amount", "status", "create_at").
+	return db.Find[Order](ctx).Select("Id", "OrderNo", "UserId", "MerchantId", "Amount", "Status", "CreateAt").
 		Cond(func(c *orm.Cond) {
-			c.Eq("user_id", userId).Eq("merchant_id", merchantId).Sub(func(c *orm.Cond) {
-				c.Eq("order_no", orderNo).Or().Eq("trade_no", orderNo)
+			c.Eq("UserId", userId).Eq("MerchantId", merchantId).Sub(func(c *orm.Cond) {
+				c.Eq("OrderNo", orderNo).Or().Eq("TradeNo", orderNo)
 			})
 		}).Do()
 	// 执行SQL:
@@ -599,13 +617,13 @@ func GetOrder(ctx context.Context, userId int64, merchantId int64, orderNo strin
 ```go
 // 根据日期查找订单
 func FindOrdersByDate(ctx context.Context, userId int64, merchantId int64, date time.Time) ([]*Order, error) {
-	return db.Find[Order](ctx).Select("id", "order_no", "user_id", "merchant_id", "amount", "status", "create_at").
+	return db.Find[Order](ctx).Select("Id", "OrderNo", "UserId", "MerchantId", "Amount", "Status", "CreateAt").
 		Cond(func(c *orm.Cond) {
-			c.Eq("user_id", userId).Eq("merchant_id", merchantId).Expr(func(c *orm.CondExpr) {
+			c.Eq("UserId", userId).Eq("MerchantId", merchantId).Expr(func(c *orm.CondExpr) {
 				c.Text("create_at = DATE(").Arg(date).Text(")")
 			})
 		}).OrderBy(func(o *orm.OrderBy) {
-		o.Asc("id")
+		o.Asc("Id")
 	}).Do()
 	// 执行SQL:
 	// SELECT id, order_no, user_id, merchant_id, amount, status, create_at
@@ -613,5 +631,31 @@ func FindOrdersByDate(ctx context.Context, userId int64, merchantId int64, date 
 	// WHERE user_id = $1
     //   AND merchant_id = $2
 	//   AND (create_at = DATE($3))
+}
+```
+
+## 字段别名
+
+在高级执行器中指定数据库字段名时，可以使用实体字段名或其首字母小写的形式作为别名，也可以直接使用数据库字段名。
+
+*Example*
+
+```go
+type User struct {
+	Id        *int64     `orm:"column=id"`
+	Name      *string    `orm:"column=name"`
+	AvatarUrl *string    `orm:"column=avatar_url"`
+	CreateAt  *time.Time `orm:"column=create_at"`
+}
+
+func main() {
+    // ...
+	
+	// name别名：Name、name
+	// avatar_url别名：AvatarUrl、avatarUrl
+	// create_at别名：CreateAt、createAt
+	db.Find[User](nil).Select("Name", "avatarUrl", "create_at").Cond(func(c *orm.Cond) {
+		c.Eq("id", 1)
+	}).Do()
 }
 ```

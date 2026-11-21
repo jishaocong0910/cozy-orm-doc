@@ -6,7 +6,7 @@ weight: 3
 # 字段策略
 
 字段策略作用于高级执行器，用于配置字段在数据库操作事件中的统一处理逻辑。通过
-{{<code>}}orm.NewColumnPolicyConfig(column string){{</code>}} 创建字段策略配置，其方法 `ForTable` 用于指定作用的表，若不指定则为所有表的默认配置，方法 `IgnoreTable` 可排除指定表。每个表的字段只会使用一个策略配置，匹配到多个时，优先使用指定了 `ForTable` 的配置，依然后多个则取最后添加的那个。
+{{<code>}}orm.NewColumnPolicyConfig(column string){{</code>}} 创建字段策略配置，其方法 `ForTable` 用于指定作用的表，若不指定则为所有表的默认配置，方法 `IgnoreTable` 可排除指定表。每个表的字段只会使用一个策略配置，匹配到多个时，优先使用指定了 `ForTable` 的配置，仍有多个匹配时，使用最后添加的配置。
 
 ## 事件处理
 
