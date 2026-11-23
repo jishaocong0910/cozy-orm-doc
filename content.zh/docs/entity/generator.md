@@ -46,18 +46,18 @@ func main() {
 
 `gen.Config` 字段为生成器的配置参数。
 
-| 参数             | 类型                                     | 描述                                                                                                                             |
-|------------------|------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| DB               | `*sql.DB`                                | 数据库连接池，必填。                                                                                                             |
+| 参数             | 类型                                     | 描述                                                                                                                                |
+|------------------|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| DB               | `*sql.DB`                                | 数据库连接池，必填。                                                                                                                |
 | DBType           | `orm.DBType`                             | 数据库类型。通过[枚举](../../db_instance/config/#枚举) `orm.DBType_` 选择，当前支持 MySQL、PostgreSQL、Oracle、SQL Server、SQLite。 |
 | FilePath         | `string`                                 | 输出文件路径。它是 `os.Getwd()` 的相对路径，为空时使用默认值 `entity`。                                                             |
-| CoverFile        | `bool`                                   | 是否覆盖已有文件。                                                                                                               |
-| OmitNameTag      | `bool`                                   | 不添加 `table` 和 `column` [标签](../../entity/tag)。                                                                                |
-| Tables           | `[]string`                               | 需要生成的表。                                                                                                                   |
-| IgnoreColumns    | {{<code>}}map[string][]string{{</code>}} | 指定忽略的表字段，这些字段不会出现在实体中，key 为表名，value 为字段名。                                                           |
-| EntityNamePrefix | `string`                                 | 实体名称前缀。                                                                                                                   |
-| EntityNameSubfix | `string`                                 | 实体名称后缀。                                                                                                                   |
-| TypeMappings     | `gen.TypeMappings`                       | 自定义类型映射规则。                                                                                                             |
+| CoverFile        | `bool`                                   | 是否覆盖已有文件。                                                                                                                  |
+| OmitNameTag      | `bool`                                   | 不添加 `table` 和 `column` [标签](../../entity/tag)。                                                                               |
+| Tables           | `[]string`                               | 需要生成的表。                                                                                                                      |
+| IgnoreColumns    | {{<code>}}map[string][]string{{</code>}} | 指定忽略的表字段，这些字段不会出现在实体中，key 为表名，value 为字段名。                                                            |
+| EntityNamePrefix | `string`                                 | 实体名称前缀。                                                                                                                      |
+| EntityNameSubfix | `string`                                 | 实体名称后缀。                                                                                                                      |
+| TypeMappings     | `gen.TypeMappings`                       | 自定义类型映射规则。                                                                                                                |
 
 ## 自定义类型
 
