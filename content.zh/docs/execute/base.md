@@ -255,7 +255,7 @@ func main() {
 		b.ForEach(b.SepWrap("(", ", ", ")"), ids, func(_ int, item int64) {
 			b.Arg(item)
 		})
-		b.ForEach(b.SepWrapOpt("AND status IN(", ", ", " )"), status, func(_ int, item int8) {
+		b.ForEach(b.SepWrapOpt(" AND status IN(", ", ", " )"), status, func(_ int, item int8) {
 			b.Arg(item)
 		})
 	}).Do()

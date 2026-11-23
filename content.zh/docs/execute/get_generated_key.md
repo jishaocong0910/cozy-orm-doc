@@ -5,7 +5,7 @@ weight: 5
 
 # 获取生成 Key
 
-根据所使用的数据库，在 DB 实例配置中设置 `GetGeneratedKeyMode` 参数，并为实体中需要回填的字段添加 `auto` [标签](../../entity/tag)。配置完成后，使用`Insert` 执行器插入记录时，会将自动生成的 Key 回填到实体对应的字段中。
+根据所使用的数据库，在 DB 实例配置中设置 `GetGeneratedKeyMode` 参数，并为实体中需要回填的字段添加 `auto` [标签](../../entity/tag)。配置完成后，使用 `Insert` 执行器插入记录时，会将自动生成的 Key 回填到实体对应的字段中。
 
 ## 模式
 
@@ -31,11 +31,11 @@ weight: 5
 
 ## 使用基础执行器
 
-基础执行器`Query`和`Mutation`也支持在插入记录时获取生成Key并回填到实体中。
+基础执行器 `Query` 和 `Mutation` 也可以在插入记录时获取生成 Key，并将其回填到实体中。
 
-`Mutation` 支持和 `FirstInsertId` 和 `LastInsertId` 模式，使用 `Mutation` 执行器插入实体时，通过指定`MapIdentity`参数即可将生成的 Key 回填到实体中。
+`Mutation` 支持 `FirstInsertId` 和 `LastInsertId` 模式。使用 `Mutation` 执行器插入记录时，可通过 `MapIdentity` 指定回填的实体。
 
-*Mutation 执行器获取生成Key示例*
+*Example*
 
 ```go
 type User struct {
@@ -65,15 +65,15 @@ func main() {
 		}
 	}).Do()
 
-	fmt.Println(users[0].Id)
-	fmt.Println(users[1].Id)
-	fmt.Println(users[2].Id)
+	fmt.Println(*users[0].Id)
+	fmt.Println(*users[1].Id)
+	fmt.Println(*users[2].Id)
 }
 ```
 
-PostgreSQL、SQL Server 这类不支持 `sql.Result.LastInsertId` 方法的数据库，它们通过查询结果集返回生成 Key。`Query` 执行器兼容这种机制，通过指定 `Map` 参数可将查询结果集按顺序映射到实体中。指定 `Map` 参数后 `Do` 方法将不会返回实体。
+`Query` 执行器可以通过自定义 SQL 插入记录并返回生成 Key，再通过 `Map` 将返回结果按顺序映射到实体中。此方式可用于 PostgreSQL 的 `INSERT ... RETURNING ...`、SQL Server 的 `INSERT ... OUTPUT ...` 等返回结果集的语法。指定 `Map` 参数后，`Do` 方法不再返回查询结果。与上文提到的[限制](#限制)一样，多行插入时，返回行的顺序可能与插入行顺序不一致，导致回填的 Key 与实体不匹配。
 
-*Query 执行器获取生成Key示例*
+*Example*
 
 ```go
 type User struct {
@@ -96,14 +96,14 @@ func main() {
 	}
 
 	db.Query[User](nil).Map(users...).BuildSql(func(b *orm.SQLBuilder) {
-		b.Text("INSERT INTO user(name, email) VALUES($1, $2), ($3, $4), ($5, $6) RETURNING id")
+		b.Text(`INSERT INTO "user"(name, email) VALUES($1, $2), ($3, $4), ($5, $6) RETURNING id`)
 		for _, user := range users {
 			b.Args(user.Name, user.Email)
 		}
 	}).Do()
 
-	fmt.Println(users[0].Id)
-	fmt.Println(users[1].Id)
-	fmt.Println(users[2].Id)
+	fmt.Println(*users[0].Id)
+	fmt.Println(*users[1].Id)
+	fmt.Println(*users[2].Id)
 }
 ```

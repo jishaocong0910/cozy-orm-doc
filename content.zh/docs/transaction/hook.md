@@ -27,11 +27,11 @@ func ImportFile(ctx context.Context, fileUrl string) error {
 		// hookCtx等于ctx，使用hookCtx执行SQL时会加入已存在的事务。
 		h.BeforeCommit(func(hookCtx context.Context) error {
 			contentType, _ := ctx.Value("Content-Type").(string)
-			db.Insert[ImportFileTask](hookCtx).Entities(&ImportFileTask{
+			_, err := db.Insert[ImportFileTask](hookCtx).Entities(&ImportFileTask{
 				FileUrl:     fileUrl,
 				ContentType: contentType,
 			}).Do()
-			return nil
+			return err
 		})
 	} else {
 		// 若ctx不存在事务，则直接导入数据。

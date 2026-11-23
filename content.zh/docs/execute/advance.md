@@ -28,8 +28,10 @@ weight: 4
 
 ```go
 type User struct {
-	Id      *int64
-	Name    *string
+    Id       *int64
+    Name     *string
+    Status   *int8
+    CreateAt *time.Time
 }
 
 func main() {
@@ -40,7 +42,7 @@ func main() {
 		DBType: orm.DBType_.MySQL, //自动配置分页模式
 	}.Build()
 
-	users := db.Find[User](nil).Select("Id", "Name").
+	users, err := db.Find[User](nil).Select("Id", "Name").
 		Cond(func(c *orm.Cond) {
 			c.Gt("Id", 10)
 		}).
@@ -329,7 +331,7 @@ func main() {
 ```go
 db.Count[User](nil).Cond(func(c *orm.Cond) {
 	c.Eq("Status", 1)
-})
+}).Do()
 ```
 
 ## 排序
